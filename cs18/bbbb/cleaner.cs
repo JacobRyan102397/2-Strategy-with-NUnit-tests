@@ -158,16 +158,49 @@ namespace RobotCleaner
     }
   }
 
-  public class Program
+    public class PerimeterHuggerStrategy : IStrategy
+    {
+        public void Clean(Map map, Robot robot)
+        {
+            // Move Right
+            while (robot.Move(robot.X + 1, robot.Y))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Down
+            while (robot.Move(robot.X, robot.Y + 1))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Left
+            while (robot.Move(robot.X - 1, robot.Y))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Up (back to start)
+            while (robot.Move(robot.X, robot.Y - 1))
+            {
+                robot.CleanCurrentSpot();
+            }
+        }
+    }
+
+
+
+    public class Program
   {
 
     public static void Main(string[] args){
       Console.WriteLine("Initialize robot");
 
 
-      IStrategy some_strategy = new SomeStrategy();
+      //IStrategy some_strategy = new SomeStrategy();
+            IStrategy strategy = new PerimeterHuggerStrategy();
 
-      Map map = new Map(20, 10);
+            Map map = new Map(20, 10);
       // map.Display( 10,10);
 
       map.AddDirt(5,3);
@@ -178,7 +211,8 @@ namespace RobotCleaner
 
       Robot robot = new Robot(map,some_strategy);
 
-      robot.StartCleaning();
+      robot.Move(0,0);
+            robot.StartCleaning();
 
       Console.WriteLine("Done.");
     }
