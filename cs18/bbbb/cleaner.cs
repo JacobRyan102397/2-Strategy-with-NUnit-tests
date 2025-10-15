@@ -158,25 +158,114 @@ namespace RobotCleaner
     }
   }
 
+<<<<<<< Updated upstream
   public class Program
+=======
+    public class PerimeterHuggerStrategy : IStrategy
+    {
+        public void Clean(Map map, Robot robot)
+        {
+            // Move Right
+            while (robot.Move(robot.X + 1, robot.Y))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Down
+            while (robot.Move(robot.X, robot.Y + 1))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Left
+            while (robot.Move(robot.X - 1, robot.Y))
+            {
+                robot.CleanCurrentSpot();
+            }
+
+            // Move Up (back to start)
+            while (robot.Move(robot.X, robot.Y - 1))
+            {
+                robot.CleanCurrentSpot();
+            }
+        }
+    }
+
+    public class SpiralStrategy : IStrategy
+    {
+        public void Clean(Map map, Robot robot)
+        {
+            // Directions: Right → Down → Left → Up (clockwise spiral)
+            int[,] directions = new int[,] { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+            int dirIndex = 0; // start moving right
+
+            int segmentLength = 1; // how far to move before turning
+            int stepsTaken = 0;    
+            int turns = 0;         
+
+            bool canMove = true;
+
+            robot.CleanCurrentSpot(); 
+
+            while (canMove)
+            {
+                for (int i = 0; i < segmentLength; i++)
+                {
+                    int nextX = robot.X + directions[dirIndex, 0];
+                    int nextY = robot.Y + directions[dirIndex, 1];
+
+                    if (!robot.Move(nextX, nextY))
+                    {
+                        canMove = false; // stop if robot hits boundary
+                        break;
+                    }
+
+                    robot.CleanCurrentSpot();
+                    stepsTaken++;
+                }
+
+                if (!canMove)
+                    break;
+
+                dirIndex = (dirIndex + 1) % 4;
+                turns++;
+                stepsTaken = 0;
+
+                // Every two turns, increase spiral size
+                if (turns % 2 == 0)
+                {
+                    segmentLength++;
+                }
+            }
+        }
+    }
+
+    public class Program
+>>>>>>> Stashed changes
   {
 
     public static void Main(string[] args){
       Console.WriteLine("Initialize robot");
 
 
+<<<<<<< Updated upstream
       IStrategy some_strategy = new SomeStrategy();
+=======
+            //IStrategy some_strategy = new SomeStrategy();
+            //IStrategy hugger_strategy = new PerimeterHuggerStrategy();
+            IStrategy strategy = new SpiralStrategy();
+>>>>>>> Stashed changes
 
       Map map = new Map(20, 10);
       // map.Display( 10,10);
 
       map.AddDirt(5,3);
       map.AddDirt(10, 8);
+      map.AddObstacle(1,1);
       map.AddObstacle(2,5);
-      map.AddObstacle(12,1);
-      map.Display(11,8);
+      map.Display(12,1);
 
-      Robot robot = new Robot(map,some_strategy);
+      Robot robot = new Robot(map,strategy);
 
       robot.StartCleaning();
 
